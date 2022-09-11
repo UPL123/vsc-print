@@ -2,7 +2,7 @@
 	"name": "vscode-print",
 	"displayName": "Print",
 	"description": "Rendered Markdown, coloured code.",
-	"version": "0.9.26",
+	"version": "0.9.31",
 	"icon": "vscode-print-128.png",
 	"author": {
 		"name": "Peter Wone",
@@ -11,7 +11,7 @@
 	"publisher": "pdconsec",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/PeterWone/vsc-print"
+		"url": "https://github.com/PDConSec/vsc-print"
 	},
 	"engines": {
 		"vscode": "^1.60.0"
@@ -34,7 +34,7 @@
 		"commands": [
 			{
 				"category": "%commands.category%",
-				"command": "extension.print",
+				"command": "vsc-print.print",
 				"title": "%commands.title.print%",
 				"icon": {
 					"dark": "./printer-icon-dog-ear-inverse.svg",
@@ -43,13 +43,18 @@
 			},
 			{
 				"category": "%commands.category%",
-				"command": "extension.printFolder",
+				"command": "vsc-print.printFolder",
 				"title": "%commands.title.printFolder%"
 			},
 			{
 				"category": "%commands.category%",
-				"command": "extension.help",
+				"command": "vsc-print.help",
 				"title": "%commands.title.help%"
+			},
+			{
+				"category": "%commands.category%",
+				"command": "vsc-print.openLog",
+				"title": "%commands.title.openLog%"
 			}
 		],
 		"configuration": [
@@ -103,9 +108,19 @@
 						],
 						"default": "inherit"
 					},
-					"print.showDiagnostics": {
-						"type": "boolean",
-						"description": "Show diagnostic information as notifications when performing print actions"
+					"print.logLevel": {
+						"type": "string",
+						"markdownDescription": "Log level `Error` will log only errors (very few entries) whereas `info` will log errors, warnings and info. `Silly` will log absolutely everything. `Debug` is good for troubleshooting but the log file will grow fast.",
+						"enum": [
+							"error",
+							"warn",
+							"info",
+							"http",
+							"verbose",
+							"debug",
+							"silly"
+						],
+						"default": "error"
 					},
 					"print.alternateBrowser": {
 						"type": "boolean",
@@ -222,33 +237,33 @@
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "extension.print",
+					"command": "vsc-print.print",
 					"group": "navigation"
 				}
 			],
 			"editor/title": [
 				{
 					"when": "editorLangId && etmButton",
-					"command": "extension.print",
+					"command": "vsc-print.print",
 					"group": "navigation"
 				}
 			],
 			"editor/title/context": [
 				{
 					"when": "editorLangId",
-					"command": "extension.print",
+					"command": "vsc-print.print",
 					"group": "navigation"
 				}
 			],
 			"editor/context": [
 				{
 					"when": "editorLangId && ecmPrint == Top",
-					"command": "extension.print",
+					"command": "vsc-print.print",
 					"group": "navigation"
 				},
 				{
 					"when": "editorLangId && ecmPrint == Bottom",
-					"command": "extension.print",
+					"command": "vsc-print.print",
 					"group": "Z_commands"
 				}
 			]
@@ -291,7 +306,6 @@
 		"typescript": "^3.9.10",
 		"vsce": "^2.9.2",
 		"vscode-nls-dev": "^3.3.2",
-		"vscode-test": "^1.6.1",
 		"webpack": "^5.54.0",
 		"webpack-cli": "^4.8.0"
 	},
@@ -300,7 +314,8 @@
 		"@types/markdown-it": "0.0.9",
 		"braces": "^3.0.2",
 		"highlight.js": "^10.7.3",
-		"vscode-nls": "^4.1.2"
+		"vscode-nls": "^4.1.2",
+		"winston": "^3.8.1"
 	},
 	"__metadata": {
 		"id": "05046d70-8146-42f5-ac9e-b97b37c8c0ef",

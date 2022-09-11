@@ -1,5 +1,33 @@
 # Change Log
 
+### 0.9.31
+
+- Control logging level with setting
+- Update documentation and localisation 
+
+### 0.9.30
+
+- Add diagnostic logging
+
+### 0.9.29
+
+- Fix content source analysis
+- Fix printing of never-saved editor buffer
+- Add regression test for printing never-saved editor buffer
+
+### 0.9.28
+
+- Update references to eliminate vulnerabilities.
+- Register ES, ZH localisation resources for UI [#145](https://github.com/PDConSec/vsc-print/issues/145)
+
+### 0.9.27
+
+- Fix printing of a selection [#142](https://github.com/PDConSec/vsc-print/issues/142)
+
+### 0.9.26
+
+- Unit tests and integration tests, with extensive supporting changes.
+
 ### 0.9.22 
 
 - Fix broken path escaping on Windows

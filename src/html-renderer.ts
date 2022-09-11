@@ -1,3 +1,4 @@
+import { logger } from './logger';
 import braces = require('braces');
 import hljs = require('highlight.js');
 import path = require('path');
@@ -16,7 +17,10 @@ export class HtmlRenderer {
 	) { }
 	public async asHtml(): Promise<string> {
 		const printConfig = vscode.workspace.getConfiguration("print", null);
+		const EMBEDDED_STYLES = this.getEmbeddedStyles();
 		if (this.language === "folder") {
+			const printConfig = vscode.workspace.getConfiguration("print", null);
+				logger.debug(`Printing a folder`);
 			const docs = await this.docsInFolder();
 			const composite = docs.map(doc => templateFolderItem
 				.replace("$FOLDER_ITEM_TITLE", doc.fileName)
@@ -33,9 +37,11 @@ export class HtmlRenderer {
 					'\t<link href="vsc-print.resource/colour-scheme.css" rel="stylesheet" />\n' +
 					'\t<link href="vsc-print.resource/settings.css" rel = "stylesheet" /> ')
 				.replace("$VSCODE_MARKDOWN_STYLESHEET_LINKS", "")
+				.replace("$EMBEDDED_STYLES", EMBEDDED_STYLES)
 				;
 		} else {
 			if (printConfig.renderMarkdown && this.language === "markdown") {
+					logger.debug(`Printing rendered Markdown`);
 				const markdownConfig = vscode.workspace.getConfiguration("markdown", null);
 				return template
 					.replace(/\$TITLE/g, path.basename(this.filename))
@@ -43,8 +49,10 @@ export class HtmlRenderer {
 					.replace("$CONTENT", () => this.getRenderedCode(this.code, this.language)) // replacer fn suppresses interpretation of $
 					.replace("$DEFAULT_STYLESHEET_LINK", '<link href="vsc-print.resource/default-markdown.css" rel="stylesheet" />')
 					.replace("$VSCODE_MARKDOWN_STYLESHEET_LINKS", markdownConfig.styles.map((cssFilename: string) => `<link href="${cssFilename}" rel="stylesheet" />`).join("\n"))
+					.replace("$EMBEDDED_STYLES", EMBEDDED_STYLES)
 					;
 			} else {
+					logger.debug(`Printing ${this.filename}`);
 				return template
 					.replace(/\$TITLE/g, path.basename(this.filename))
 					.replace("$PRINT_AND_CLOSE", printConfig.printAndClose)
@@ -55,9 +63,14 @@ export class HtmlRenderer {
 						'\t<link href="vsc-print.resource/colour-scheme.css" rel="stylesheet" />\n' +
 						'\t<link href="vsc-print.resource/settings.css" rel = "stylesheet" /> ')
 					.replace("$VSCODE_MARKDOWN_STYLESHEET_LINKS", "")
+					.replace("$EMBEDDED_STYLES", EMBEDDED_STYLES)
 					;
 			}
 		}
+	}
+	getEmbeddedStyles() {
+		let editorConfig = vscode.workspace.getConfiguration("editor", null);
+		return `body{tab-size:${editorConfig.tabSize};}`;
 	}
 	getRenderedCode(code: string, languageId: string): string {
 		let renderedCode = "";
